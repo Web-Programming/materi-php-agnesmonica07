@@ -11,7 +11,8 @@ class Prodi extends Controller
      */
     public function index()
     {
-        //
+        $listprodi = prodi::get();
+        return view("prodi.index", ['listprodi' => $listprodi]);
     }
 
     /**
@@ -19,7 +20,7 @@ class Prodi extends Controller
      */
     public function create()
     {
-        //
+        return view("prodi.create");
     }
 
     /**

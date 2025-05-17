@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 
 class ProdiController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         return view("prodi.index");
     }
 }
