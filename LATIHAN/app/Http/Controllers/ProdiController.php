@@ -35,13 +35,22 @@ class ProdiController extends Controller
         $validateData = $request->validate(
             [
                 'nama' => 'required|min:5|max:20',
-                'kode_prodi' => 'required|min:2|max:2'
+                'kode_prodi' => 'required|min:2|max:2',
+                'logo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
             ]
         );
 
         $prodi = new Prodi();
         $prodi->nama = $validateData['nama']; //$request->nama
         $prodi->kode_prodi = $validateData['kode_prodi'];
+        //upload logo
+        if ($request->hasFile('logo')) {
+            $file = $request->file(key: 'logo');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images'), $filename);
+            $prodi->logo = $filename;
+        }
+
         $prodi->save();
 
         //Prodi::create([
@@ -61,7 +70,7 @@ class ProdiController extends Controller
         $prodi = Prodi::find($id);
 
         //buat view detail di folder view/prodi
-        return view("prodi.detail", ['detailprodi' => $prodi]);
+        return view("prodi.detail", ['prodi' => $prodi]);
     }
 
     /**
@@ -73,7 +82,10 @@ class ProdiController extends Controller
         $prodi = Prodi::find($id);
 
         //buat view edit di folder view/prodi
-        return view("prodi.edit", ['detailprodi' => $prodi]);
+        return view(
+            "prodi.edit",
+            ['prodi' => $prodi]
+        );
     }
 
     /**
@@ -81,7 +93,20 @@ class ProdiController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validateData = $request->validate(
+            [
+                'nama' => 'required|min:5|max:20',
+                'kode_prodi' => 'required|min:2|max:2'
+            ]
+        );
+
+        $prodi = Prodi::find($id); //ambil data prodi berdasarkan id
+        $prodi->nama = $validateData['nama']; //$request->nama
+        $prodi->kode_prodi = $validateData['kode_prodi'];
+        $prodi->save();
+
+        return redirect("prodi")
+            ->with("status", "Data Program Studi berhasil diupdate!");
     }
 
     /**
@@ -89,6 +114,10 @@ class ProdiController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        //ambil data prodi berdasarkan id
+        $prodi = Prodi::find($id);
+        //hapus data prodi
+        $prodi->delete();
+        return redirect("prodi")->with("status", "Data Program Studi berhasil dihapus!");
     }
 }
